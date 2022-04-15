@@ -1,4 +1,4 @@
-pub mod new {
+pub mod list_func {
 	
 	extern crate rusqlite;
 	use rusqlite::{params, Connection, Result, NO_PARAMS};
@@ -7,6 +7,14 @@ pub mod new {
 	struct Type {
 		id: i64,
 		text: String
+	}
+
+	#[derive(Debug)]
+	struct Note {
+		id: i64,
+		text: String,
+		status: String,
+		list: String
 	}
 
 	fn create_list(s: &str) -> Result<()> {
@@ -33,9 +41,7 @@ pub mod new {
 		for i in &v {
 			if s == i.text {
 				ifhave = true;
-				break;
-			}
-			else { ifhave = false; }
+				break; } else { ifhave = false; }
 		}
 
 		if ifhave == false {
@@ -68,5 +74,86 @@ pub mod new {
 		let new_rsp = resp[0..resp.len() - 2].to_string();
 
 		create_list(&new_rsp);
+	}
+
+
+	pub fn delete_list() -> Result<()> {
+
+		fn delete_notes(rsp: &str) -> Result<()> {
+			let conn = Connection::open("base.db3")?;
+			let mut list = conn.prepare("SELECT id, text, status, list FROM base")?;
+			let data = list.query_map([], |row| {
+				Ok(Note {
+					id: row.get(0)?,
+					text: row.get(1)?,
+					status: row.get(2)?,
+					list: row.get(3)?,
+				})
+			})?;
+
+			let mut ifhave: bool = false;
+			let mut id_int: i64 = 1;
+			let mut base = Vec::new();
+
+			for i in data {
+				if i.as_ref().unwrap().list == rsp { ifhave = true; }
+				else { base.push(i.unwrap()); }
+			}
+
+			if ifhave == true {
+				for i in 0..base.len() {
+					base[i].id = id_int;
+					id_int += 1;
+				}
+			}
+
+			conn.execute("DELETE FROM base", [])?;
+			for i in &base {conn.execute("INSERT INTO base (id, text, status, list) values (?1, ?2, ?3, ?4)", params![i.id, i.text, i.status, i.list],)?;}
+
+			Ok(())
+		}
+
+		println!("Which list do you want to delete ? -->");
+
+		let mut resp = String::new();
+		std::io::stdin()
+			.read_line(&mut resp)
+			.expect("Failes");
+
+		let rsp = resp[0..resp.len() - 2].to_string();
+
+		let conn = Connection::open("base.db3")?;
+		let mut list = conn.prepare("SELECT id, text FROM lists")?;
+		let data = list.query_map([], |row| {
+			Ok(Type {
+				id: row.get(0)?,
+				text: row.get(1)?,
+			})
+		})?;
+
+		let mut ifhave: bool = false;
+		let mut id_int: i64 = 1;
+		let mut base = Vec::new();
+
+		for i in data {
+			if i.as_ref().unwrap().text == rsp { ifhave = true; }
+			else { base.push(i.unwrap()); }
+		}
+
+		if ifhave == true {
+			for i in 0..base.len() {
+				base[i].id = id_int;
+				id_int += 1;
+			}
+
+			delete_notes(&rsp);
+
+			conn.execute("DELETE FROM lists", [])?;
+			for i in &base { conn.execute("INSERT INTO lists (id, text) values (?1, ?2)", params![i.id, i.text],)?; }
+
+			println!("List deleted !");
+		} else { println!("Element not found !"); }
+
+		Ok(())
 	}
 }

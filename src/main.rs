@@ -10,7 +10,7 @@ mod print;
 pub use crate::print::print_base;
 
 mod list;
-pub use crate::list::new;
+pub use crate::list::list_func;
 
 mod task;
 pub use crate::task::add;
@@ -19,7 +19,9 @@ pub use crate::task::add;
 fn input(rsp: &str) {
 	if rsp == "/add" { add::add_task(); }
 
-	else if rsp == "/new-list" { new::new_list(); }
+	else if rsp == "/new-list" { list_func::new_list(); }
+
+	else if rsp == "/delete-list" { list_func::delete_list(); }
 
 	else if rsp == "/print" { print_base::print_data(); }
 
