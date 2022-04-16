@@ -1,13 +1,13 @@
 // PACKAGES
-extern crate chrono;
-use chrono::Utc;
+//extern crate chrono;
+//use chrono::Utc;
 
 extern crate rusqlite;
 use rusqlite::{params, Connection, Result, NO_PARAMS};
 
 // MODULES
 mod print;
-pub use crate::print::print_base;
+pub use crate::print::print_func;
 
 mod list;
 pub use crate::list::list_func;
@@ -23,7 +23,9 @@ fn input(rsp: &str) {
 
 	else if rsp == "/delete-list" { list_func::delete_list(); }
 
-	else if rsp == "/print" { print_base::print_data(); }
+	else if rsp == "/print-all" { print_func::print_all(); }
+
+	else if rsp == "/print" { print_func::print_one(); }
 
 	else if rsp == "/exit" { println!("Exit !"); }
 

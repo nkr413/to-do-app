@@ -1,26 +1,29 @@
-pub mod print_base {
+use crate::connect::conn;
+
+pub mod print_func {
+
+	//mod connect;
+	// use crate::connect;
 	
 	extern crate rusqlite;
 	use rusqlite::{params, Connection, Result, NO_PARAMS};
 
-	#[derive(Debug)]
-	struct Type {
-		id: i64,
-		text: String
+	pub fn print_all() -> Result<()> {
+
+		println!("all-data");
+
+		Ok(())
 	}
 
-	pub fn print_data() -> Result<()> {
-		let conn = Connection::open("base.db3")?;
+	pub fn print_one() -> Result<()> {
+		println!("Which list do you want to see ? -->");
 
-		let mut list = conn.prepare("SELECT id, text FROM lists")?;
-		let data = list.query_map([], |row| {
-			Ok(Type {
-				id: row.get(0)?,
-				text: row.get(1)?,
-			})
-		})?;
+		let mut resp = String::new();
+		std::io::stdin()
+			.read_line(&mut resp)
+			.expect("Failes");
 
-		for i in data { println!("{:?}", i); }
+		let rsp = resp[0..resp.len() - 2].to_string();
 
 		Ok(())
 	}
