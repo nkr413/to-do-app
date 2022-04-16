@@ -1,16 +1,10 @@
-use crate::connect::conn;
-
-pub mod print_func {
-
-	//mod connect;
-	// use crate::connect;
-	
+pub mod print_func {	
 	extern crate rusqlite;
 	use rusqlite::{params, Connection, Result, NO_PARAMS};
 
 	pub fn print_all() -> Result<()> {
-
 		println!("all-data");
+
 
 		Ok(())
 	}
