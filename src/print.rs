@@ -5,7 +5,8 @@ pub mod print_func {
 	#[derive(Debug)]
 	struct Type {
 		id: i64,
-		text: String
+		text: String,
+		length: i64
 	}
 
 	#[derive(Debug)]
@@ -19,11 +20,12 @@ pub mod print_func {
 	pub fn print_all() -> Result<()> {
 		println!("all-data");
 		let conn = Connection::open("base.db3")?;
-		let mut list = conn.prepare("SELECT id, text FROM lists")?;
+		let mut list = conn.prepare("SELECT id, text, length FROM list")?;
 		let data = list.query_map([], |row| {
 			Ok(Type {
 				id: row.get(0)?,
 				text: row.get(1)?,
+				length: row.get(2)?,
 			})
 		})?;
 

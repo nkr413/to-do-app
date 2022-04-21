@@ -1,12 +1,12 @@
 pub mod add {
-
 	extern crate rusqlite;
 	use rusqlite::{params, Connection, Result, NO_PARAMS};
 
 	#[derive(Debug)]
 	struct Type {
 		id: i64,
-		text: String
+		text: String,
+		length: i64
 	}
 
 	#[derive(Debug)]
@@ -15,6 +15,28 @@ pub mod add {
 		text: String,
 		status: String,
 		list: String
+	}
+
+	fn update_len(d: &Vec<Type>, s: &str) -> Result<()> {
+		let mut v = Vec::new();
+
+		for i in d {
+			if i.text == s {
+				v.push(Type {
+					id: i.id,
+					text: i.text.to_string(),
+					length: i.length + 1,
+				});
+			}
+			else { v.push(Type { id: i.id, text: i.text.to_string(), length: i.length, }); }
+		}
+
+		let conn = Connection::open("base.db3")?;
+		conn.execute("DELETE FROM list", [])?;
+
+		for i in &v {conn.execute("INSERT INTO list (id, text, length) values (?1, ?2, ?3)", params![i.id, i.text, i.length],)?;}
+		
+		Ok(())
 	}
 
 	fn write_task(s: &str) -> Result<()> {
@@ -79,11 +101,12 @@ pub mod add {
 		let new_rsp = resp[0..resp.len() - 2].to_string();
 
 		let conn = Connection::open("base.db3")?;
-		let mut list = conn.prepare("SELECT id, text FROM lists")?;
+		let mut list = conn.prepare("SELECT id, text, length FROM list")?;
 		let data = list.query_map([], |row| {
 			Ok(Type {
 				id: row.get(0)?,
 				text: row.get(1)?,
+				length: row.get(2)?,
 			})
 		})?;
 
@@ -91,7 +114,7 @@ pub mod add {
 		let mut v = Vec::new();
 
 		for i in data {v.push(i.unwrap());}
-
+		
 		for i in &v {
 			if new_rsp == i.text {
 				ifhave = true;
@@ -100,7 +123,10 @@ pub mod add {
 			else { ifhave = false; }
 		}
 
-		if ifhave == true { write_task(&new_rsp); }
+		if ifhave == true {
+			update_len(&v, &new_rsp);
+			write_task(&new_rsp);
+		}
 		else { println!("There is no such category");}
 
 		Ok(())

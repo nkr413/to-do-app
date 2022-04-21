@@ -1,12 +1,12 @@
 pub mod list_func {
-	
 	extern crate rusqlite;
 	use rusqlite::{params, Connection, Result, NO_PARAMS};
 
 	#[derive(Debug)]
 	struct Type {
 		id: i64,
-		text: String
+		text: String,
+		length: i64
 	}
 
 	#[derive(Debug)]
@@ -19,16 +19,18 @@ pub mod list_func {
 
 	fn create_list(s: &str) -> Result<()> {
 		let conn = Connection::open("base.db3")?;
-		conn.execute("CREATE TABLE IF NOT EXISTS lists (
+		conn.execute("CREATE TABLE IF NOT EXISTS list (
 			id  		INTEGER PRIMARY KEY,
-			text  	TEXT NOT NULL)", NO_PARAMS,
+			text  	TEXT NOT NULL,
+			length 	INTEGER NOT NULL)", NO_PARAMS,
 		)?;
 
-		let mut list = conn.prepare("SELECT id, text FROM lists")?;
+		let mut list = conn.prepare("SELECT id, text, length FROM list")?;
 		let data = list.query_map([], |row| {
 			Ok(Type {
 				id: row.get(0)?,
 				text: row.get(1)?,
+				length: row.get(2)?,
 			})
 		})?;
 
@@ -45,16 +47,16 @@ pub mod list_func {
 		}
 
 		if ifhave == false {
-			v.push(Type {id: 0, text: s.to_string(),});
+			v.push(Type {id: 0, text: s.to_string(), length: 0,});
 
 			for i in 0..v.len() {
 				v[i].id = id_int;
 				id_int += 1;
 			}
 
-			conn.execute("DELETE FROM lists", [])?;
+			conn.execute("DELETE FROM list", [])?;
 
-			for i in v {conn.execute("INSERT INTO lists (id, text) values (?1, ?2)", params![i.id, i.text],)?;}
+			for i in v {conn.execute("INSERT INTO list (id, text, length) values (?1, ?2, ?3)", params![i.id, i.text, i.length],)?;}
 
 			println!("Category created !");
 
@@ -123,11 +125,12 @@ pub mod list_func {
 		let rsp = resp[0..resp.len() - 2].to_string();
 
 		let conn = Connection::open("base.db3")?;
-		let mut list = conn.prepare("SELECT id, text FROM lists")?;
+		let mut list = conn.prepare("SELECT id, text, length FROM list")?;
 		let data = list.query_map([], |row| {
 			Ok(Type {
 				id: row.get(0)?,
 				text: row.get(1)?,
+				length: row.get(2)?,
 			})
 		})?;
 
@@ -149,7 +152,7 @@ pub mod list_func {
 			delete_notes(&rsp);
 
 			conn.execute("DELETE FROM lists", [])?;
-			for i in &base { conn.execute("INSERT INTO lists (id, text) values (?1, ?2)", params![i.id, i.text],)?; }
+			for i in &base { conn.execute("INSERT INTO list (id, text, length) values (?1, ?2, ?3)", params![i.id, i.text, i.length],)?; }
 
 			println!("List deleted !");
 		} else { println!("Element not found !"); }
