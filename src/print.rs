@@ -32,7 +32,10 @@ pub mod print_func {
 		let mut v = Vec::new();
 		for i in data {v.push(i.unwrap());}
 
-		println!("{:?}", v);
+		println!("\n-- All Data --\n");
+		for i in &v {println!("id: {:?} - {:?} ({:?})", i.id, i.text, i.length);}
+		println!("\n--------------\n");
+
 		Ok(())
 	}
 
