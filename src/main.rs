@@ -17,6 +17,9 @@ pub use crate::list::list_func;
 mod task;
 pub use crate::task::add;
 
+mod help;
+pub use crate::help::help_func;
+
 
 fn input() {
 	println!("Enter -> ");
@@ -40,6 +43,8 @@ fn input() {
 
 	else if rsp == "/clear" { clearscreen::clear().unwrap(); }
 	else if rsp == "/cls" { clearscreen::clear().unwrap(); }
+
+	else if rsp == "/help" { help_func::commands_list(); }
 
 	else if rsp == "/exit" {
 		println!("Exit !");

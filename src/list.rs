@@ -80,7 +80,6 @@ pub mod list_func {
 
 
 	pub fn delete_list() -> Result<()> {
-
 		fn delete_notes(rsp: &str) -> Result<()> {
 			let conn = Connection::open("base.db3")?;
 			let mut list = conn.prepare("SELECT id, text, status, list FROM base")?;
