@@ -40,7 +40,7 @@ pub mod print_func {
 	}
 
 	pub fn print_one() -> Result<()> {
-		pub fn get_list() -> Result<()> {
+		fn get_list(rsp: &str) -> Result<()> {
 			let conn = Connection::open("base.db3")?;
 			let mut list = conn.prepare("SELECT id, text, status, list FROM base")?;
 			let data = list.query_map([], |row| {
@@ -52,6 +52,30 @@ pub mod print_func {
 				})
 			})?;
 
+			let mut v = Vec::new();
+			let mut ifhave: bool = false;
+			let mut note_id: i64 = 1;
+
+			for i in data {
+				if i.as_ref().unwrap().list == rsp {
+					ifhave = true;
+					v.push(i.unwrap());
+				}
+			}
+			if ifhave == false { println!("There is no such list :("); }
+
+			println!("\n-- {:?} --\n", rsp);
+			for i in v {
+				if i.status == "true".to_string() {
+					println!("{:?}. (✅) -> {:?}", note_id, i.text);
+				} else {
+					println!("{:?}. (❌) -> {:?}", note_id, i.text);
+				}
+
+				note_id += 1;
+			}
+			println!("\n--------------\n");
+
 			Ok(())
 		}
 
@@ -62,7 +86,7 @@ pub mod print_func {
 			.read_line(&mut resp)
 			.expect("Failes");
 
-		let rsp = resp[0..resp.len() - 2].to_string();
+		get_list(&resp[0..&resp.len() - 2].to_string());
 
 		Ok(())
 	}
