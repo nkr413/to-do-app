@@ -1,0 +1,34 @@
+[
+	{
+		"title" : "/add",
+		"description" : "the command adds a note to the list"
+	},
+	{
+		"title" : "/new-list",
+		"description" : "the command creates a new list"
+	},
+	{
+		"title" : "/delete-list",
+		"description" : "the command deletes one list"
+	},
+	{
+		"title" : "/print-all",
+		"description" : "the command shows all the lists with the number of notes inside them"
+	},
+	{
+		"title" : "/print",
+		"description" : "the command shows one list with all notes and their states (completed or not)"
+	},
+	{
+		"title" : "/cls\n/clear",
+		"description" : "two commands clear the terminal, use the one that is convenient for you"
+	},
+	{
+		"title" : "/help",
+		"description" : "the command to display a list of commands and their explanations"
+	},
+	{
+		"title" : "/exit",
+		"description" : "the command to exit the program"
+	}
+]
