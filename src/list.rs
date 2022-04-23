@@ -151,8 +151,9 @@ pub mod list_func {
 
 			delete_notes(&rsp);
 
-			conn.execute("DELETE FROM lists", [])?;
-			for i in &base { conn.execute("INSERT INTO list (id, text, length) values (?1, ?2, ?3)", params![i.id, i.text, i.length],)?; }
+			let con = Connection::open("base.db3")?;
+			con.execute("DELETE FROM list", [])?;
+			for i in &base { con.execute("INSERT INTO list (id, text, length) values (?1, ?2, ?3)", params![i.id, i.text, i.length],)?; }
 
 			println!("List deleted !");
 		} else { println!("Element not found !"); }
