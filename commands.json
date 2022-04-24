@@ -8,7 +8,7 @@
 		"description" : "the command creates a new list"
 	},
 	{
-		"title" : "/delete-list",
+		"title" : "/del-list",
 		"description" : "the command deletes one list"
 	},
 	{

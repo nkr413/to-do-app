@@ -15,7 +15,7 @@ mod list;
 pub use crate::list::list_func;
 
 mod task;
-pub use crate::task::add;
+pub use crate::task::task_func;
 
 mod help;
 pub use crate::help::help_func;
@@ -31,11 +31,13 @@ fn input() {
 
 	let rsp = &resp[0..&resp.len() - 2].to_string();
 
-	if rsp == "/add" { add::add_task(); }
+	if rsp == "/add" { task_func::add_task(); }
+
+	if rsp == "/del" { task_func::delete_list(); }
 
 	else if rsp == "/new-list" { list_func::new_list(); }
 
-	else if rsp == "/delete-list" { list_func::delete_list(); }
+	else if rsp == "/del-list" { list_func::delete_list(); }
 
 	else if rsp == "/print-all" { print_func::print_all(); }
 
