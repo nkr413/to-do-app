@@ -1,4 +1,4 @@
-pub mod add {
+pub mod task_func {
 	extern crate rusqlite;
 	use rusqlite::{params, Connection, Result, NO_PARAMS};
 
@@ -16,6 +16,25 @@ pub mod add {
 		status: String,
 		list: String
 	}
+
+	// RETURN DATABASE <LIST>
+	fn list_db_data() -> Result<Vec<Type>> {
+		let conn = Connection::open("base.db3")?;
+		let mut list = conn.prepare("SELECT id, text, length FROM list")?;
+		let data = list.query_map([], |row| {
+			Ok(Type {
+				id: row.get(0)?,
+				text: row.get(1)?,
+				length: row.get(2)?,
+			})
+		})?;
+
+		let mut v = Vec::new();
+		for i in data {v.push(i.unwrap());}
+
+		Ok(v)
+	}
+
 
 	fn update_len(d: &Vec<Type>, s: &str) -> Result<()> {
 		let mut v = Vec::new();
@@ -100,20 +119,8 @@ pub mod add {
 
 		let new_rsp = resp[0..resp.len() - 2].to_string();
 
-		let conn = Connection::open("base.db3")?;
-		let mut list = conn.prepare("SELECT id, text, length FROM list")?;
-		let data = list.query_map([], |row| {
-			Ok(Type {
-				id: row.get(0)?,
-				text: row.get(1)?,
-				length: row.get(2)?,
-			})
-		})?;
-
 		let mut ifhave: bool = false;
-		let mut v = Vec::new();
-
-		for i in data {v.push(i.unwrap());}
+		let mut v = list_db_data().unwrap();
 		
 		for i in &v {
 			if new_rsp == i.text {
@@ -130,5 +137,20 @@ pub mod add {
 		else { println!("There is no such category");}
 
 		Ok(())
+	}
+
+	pub fn delete_list() {
+		println!("From which list do you want to delete a note ? -->");
+
+		let mut resp = String::new();
+		std::io::stdin()
+			.read_line(&mut resp)
+			.expect("Failes");
+
+		let rsp = resp[0..resp.len() - 2].to_string();
+
+		let v = list_db_data().unwrap();
+
+		println!("{:?}", v);
 	}
 }
