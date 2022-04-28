@@ -35,6 +35,25 @@ pub mod task_func {
 		Ok(v)
 	}
 
+	// RETURN DATABASE <BASE>
+	fn base_db_data() -> Result<Vec<Note>> {
+		let conn = Connection::open("base.db3")?;
+		let mut list = conn.prepare("SELECT id, text, status, list FROM base")?;
+		let data = list.query_map([], |row| {
+			Ok(Note {
+				id: row.get(0)?,
+				text: row.get(1)?,
+				status: row.get(2)?,
+				list: row.get(3)?,
+			})
+		})?;
+
+		let mut v = Vec::new();
+		for i in data {v.push(i.unwrap());}
+
+		Ok(v)
+	}
+
 
 	fn update_len(d: &Vec<Type>, s: &str) -> Result<()> {
 		let mut v = Vec::new();
@@ -139,7 +158,66 @@ pub mod task_func {
 		Ok(())
 	}
 
-	pub fn delete_list() {
+	pub fn delete_note() {
+
+		fn delete(list_name: &str, list_db: &Vec<Type>, base_db: &Vec<Note>) -> Result<()> {
+			println!("Write the <ID> of the note -->");
+
+			let mut resp = String::new();
+			std::io::stdin()
+				.read_line(&mut resp)
+				.expect("Failes");
+
+			let rsp: i64 = resp[0..resp.len() - 2].to_string().trim().parse().unwrap();
+			let mut new_base = Vec::new();
+			let mut ifhave: bool = false;
+			let mut id_int: i64 = 1;
+
+			for i in base_db {
+				if i.id != rsp {
+					ifhave = true;
+
+					new_base.push(Note {
+						id: id_int,
+						text: i.text.to_string(),
+						status: i.status.to_string(),
+						list: i.list.to_string()
+					});
+
+					id_int += 1;
+				}
+			}
+
+			if ifhave == false {
+				println!("No such identifier was found");
+				Ok(())
+			}
+			else {
+				let mut new_list = Vec::new();
+				
+				for i in list_db {
+					if i.text == list_name {
+						new_list.push(Type {
+							id: i.id,
+							text: i.text.to_string(),
+							length: i.length - 1,
+						});
+					} else { new_list.push(Type {id: i.id, text: i.text.to_string(), length: i.length,}); }
+				}
+
+				let conn = Connection::open("base.db3")?;
+				conn.execute("DELETE FROM base", [])?;
+				conn.execute("DELETE FROM list", [])?;
+
+				for i in &new_list {conn.execute("INSERT INTO list (id, text, length) values (?1, ?2, ?3)", params![i.id, i.text, i.length],)?;}
+				for i in &new_base {conn.execute("INSERT INTO base (id, text, status, list) values (?1, ?2, ?3, ?4)", params![i.id, i.text, i.status, i.list],)?;}
+
+				println!("Note deleted !");
+
+				Ok(())
+			}
+		}
+
 		println!("From which list do you want to delete a note ? -->");
 
 		let mut resp = String::new();
@@ -148,9 +226,33 @@ pub mod task_func {
 			.expect("Failes");
 
 		let rsp = resp[0..resp.len() - 2].to_string();
+		let mut ifhave: bool = false;
 
 		let v = list_db_data().unwrap();
+		let b = base_db_data().unwrap();
+		let mut new_base = Vec::new();
 
-		println!("{:?}", v);
+		for i in &v {
+			if rsp == i.text {
+				ifhave = true;
+				break;
+			} else { ifhave = false; }
+		}
+
+		if ifhave == true {
+			for i in &b {
+				if i.list == rsp { new_base.push(i); }
+				else { continue; }
+			}
+
+			println!("\n--- Select the note <ID> to delete it from <{}> ---\n", rsp);
+			for i in &new_base { println!("id: {:?} - {}", i.id, i.text); }
+			println!("\n--------------\n");
+
+			delete(&rsp, &v, &b);
+
+		} else { println!("List not found !"); }
+
+		//println!("{:?}", v);
 	}
 }
