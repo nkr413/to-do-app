@@ -33,7 +33,7 @@ fn input() {
 
 	if rsp == "/add" { task_func::add_task(); }
 
-	if rsp == "/del" { task_func::delete_list(); }
+	if rsp == "/del" { task_func::delete_note(); }
 
 	else if rsp == "/new-list" { list_func::new_list(); }
 
