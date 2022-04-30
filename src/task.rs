@@ -159,7 +159,6 @@ pub mod task_func {
 	}
 
 	pub fn delete_note() {
-
 		fn delete(list_name: &str, list_db: &Vec<Type>, base_db: &Vec<Note>) -> Result<()> {
 			println!("Write the <ID> of the note -->");
 
@@ -252,7 +251,82 @@ pub mod task_func {
 			delete(&rsp, &v, &b);
 
 		} else { println!("List not found !"); }
+	}
 
-		//println!("{:?}", v);
+
+	fn done(list_name: &str) -> Result<()> {
+		println!("\nEnter the ID of the note you want to mark as completed -->\n");
+
+		let v = base_db_data().unwrap();
+
+		for i in v {
+			if i.list == list_name {
+				if i.status == "true".to_string() {println!("{:?}. (✅) -> {:?}", i.id, i.text);}
+				else {println!("{:?}. (❌) -> {:?}", i.id, i.text);}
+			}
+		}
+		println!("\n--------------\n");
+
+		let mut resp = String::new();
+		std::io::stdin()
+			.read_line(&mut resp)
+			.expect("Failes");
+
+		let old_rsp = resp[0..resp.len() - 2].to_string();
+		let rsp: i64 = old_rsp.trim().parse().unwrap();
+		let mut ifhave: bool = false;
+		let mut new_base = Vec::new();
+		let b = base_db_data().unwrap();
+
+		for i in b {
+			if i.id == rsp {
+				ifhave = true;
+
+				new_base.push(Note {
+					id: i.id,
+					text: i.text.to_string(),
+					status: "true".to_string(),
+					list: i.list.to_string()
+				});
+			} else {
+				new_base.push(Note {id: i.id, text: i.text.to_string(), status: i.status.to_string(), list: i.list.to_string()});
+			}
+		}
+
+		if ifhave == true {
+			let conn = Connection::open("base.db3")?;
+			conn.execute("DELETE FROM base", [])?;
+
+			for i in &new_base {conn.execute("INSERT INTO base (id, text, status, list) values (?1, ?2, ?3, ?4)", params![i.id, i.text, i.status, i.list],)?;}
+
+			println!("Note marked as 'completed' !");
+		} else {println!("Incorrect ID !");}
+
+		Ok(())
+	}
+
+	pub fn done_note() {
+		println!("Select a list -->");
+
+		let mut resp = String::new();
+		std::io::stdin()
+			.read_line(&mut resp)
+			.expect("Failes");
+
+		let rsp = resp[0..resp.len() - 2].to_string();
+
+		let mut ifhave: bool = false;
+		let mut v = list_db_data().unwrap();
+		
+		for i in &v {
+			if rsp == i.text {
+				ifhave = true;
+				break;
+			}
+			else { ifhave = false; }
+		}
+
+		if ifhave == true {done(&rsp);}
+		else {println!("There is no such category");}
 	}
 }
