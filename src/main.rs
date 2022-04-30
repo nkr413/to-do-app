@@ -39,6 +39,8 @@ fn input() {
 
 	else if rsp == "/del-list" { list_func::delete_list(); }
 
+	else if rsp == "/done" { task_func::done_note(); }
+
 	else if rsp == "/print-all" { print_func::print_all(); }
 
 	else if rsp == "/print" { print_func::print_one(); }
