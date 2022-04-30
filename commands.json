@@ -12,6 +12,10 @@
 		"description" : "the command deletes one list"
 	},
 	{
+		"title" : "/done",
+		"description" : "the command to mark a note/task as completed"
+	},
+	{
 		"title" : "/print-all",
 		"description" : "the command shows all the lists with the number of notes inside them"
 	},
