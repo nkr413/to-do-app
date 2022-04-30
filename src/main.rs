@@ -1,9 +1,5 @@
 #![allow(warnings)]
 
-// PACKAGES
-//extern crate chrono;
-//use chrono::Utc;
-
 extern crate rusqlite;
 use rusqlite::{params, Connection, Result, NO_PARAMS};
 
