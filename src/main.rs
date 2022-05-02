@@ -21,10 +21,7 @@ fn input() {
 	println!("Enter -> ");
 
 	let mut resp = String::new();
-	std::io::stdin()
-		.read_line(&mut resp)
-		.expect("Failes");
-
+	std::io::stdin().read_line(&mut resp).expect("Failes");
 	let rsp = &resp[0..&resp.len() - 2].to_string();
 
 	if rsp == "/add" { task_func::add_task(); }

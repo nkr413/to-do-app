@@ -76,10 +76,7 @@ pub mod list_func {
 		println!("Write new list name (work chores) -->");
 
 		let mut resp = String::new();
-		std::io::stdin()
-			.read_line(&mut resp)
-			.expect("Failes");
-
+		std::io::stdin().read_line(&mut resp).expect("Failes");
 		let new_rsp = resp[0..resp.len() - 2].to_string();
 
 		create_list(&new_rsp);

@@ -82,9 +82,7 @@ pub mod print_func {
 		println!("Which list do you want to see ? -->");
 
 		let mut resp = String::new();
-		std::io::stdin()
-			.read_line(&mut resp)
-			.expect("Failes");
+		std::io::stdin().read_line(&mut resp).expect("Failes");
 
 		get_list(&resp[0..&resp.len() - 2].to_string());
 

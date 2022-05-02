@@ -79,11 +79,9 @@ pub mod task_func {
 
 	fn write_task(s: &str) -> Result<()> {
 		println!("Write the task you want to add to the {:?} category -->", &s);
-		let mut resp = String::new();
-		std::io::stdin()
-			.read_line(&mut resp)
-			.expect("Failes");
 
+		let mut resp = String::new();
+		std::io::stdin().read_line(&mut resp).expect("Failes");
 		let rsp = resp[0..resp.len() - 2].to_string();
 
 		let conn = Connection::open("base.db3")?;
@@ -132,10 +130,7 @@ pub mod task_func {
 		println!("Which list do you want to add the task to ? -->");
 
 		let mut resp = String::new();
-		std::io::stdin()
-			.read_line(&mut resp)
-			.expect("Failes");
-
+		std::io::stdin().read_line(&mut resp).expect("Failes");
 		let new_rsp = resp[0..resp.len() - 2].to_string();
 
 		let mut ifhave: bool = false;
@@ -163,11 +158,9 @@ pub mod task_func {
 			println!("Write the <ID> of the note -->");
 
 			let mut resp = String::new();
-			std::io::stdin()
-				.read_line(&mut resp)
-				.expect("Failes");
-
+			std::io::stdin().read_line(&mut resp).expect("Failes");
 			let rsp: i64 = resp[0..resp.len() - 2].to_string().trim().parse().unwrap();
+
 			let mut new_base = Vec::new();
 			let mut ifhave: bool = false;
 			let mut id_int: i64 = 1;
@@ -220,13 +213,10 @@ pub mod task_func {
 		println!("From which list do you want to delete a note ? -->");
 
 		let mut resp = String::new();
-		std::io::stdin()
-			.read_line(&mut resp)
-			.expect("Failes");
-
+		std::io::stdin().read_line(&mut resp).expect("Failes");
 		let rsp = resp[0..resp.len() - 2].to_string();
-		let mut ifhave: bool = false;
 
+		let mut ifhave: bool = false;
 		let v = list_db_data().unwrap();
 		let b = base_db_data().unwrap();
 		let mut new_base = Vec::new();
@@ -268,11 +258,9 @@ pub mod task_func {
 		println!("\n--------------\n");
 
 		let mut resp = String::new();
-		std::io::stdin()
-			.read_line(&mut resp)
-			.expect("Failes");
-
+		std::io::stdin().read_line(&mut resp).expect("Failes");
 		let old_rsp = resp[0..resp.len() - 2].to_string();
+
 		let rsp: i64 = old_rsp.trim().parse().unwrap();
 		let mut ifhave: bool = false;
 		let mut new_base = Vec::new();
@@ -309,10 +297,7 @@ pub mod task_func {
 		println!("Select a list -->");
 
 		let mut resp = String::new();
-		std::io::stdin()
-			.read_line(&mut resp)
-			.expect("Failes");
-
+		std::io::stdin().read_line(&mut resp).expect("Failes");
 		let rsp = resp[0..resp.len() - 2].to_string();
 
 		let mut ifhave: bool = false;
